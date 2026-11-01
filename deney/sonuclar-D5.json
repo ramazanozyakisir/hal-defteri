@@ -1,0 +1,67 @@
+{
+  "meta": {
+    "tarih": "2026-11-01T09:38:56.460Z",
+    "node": "v24.21.0",
+    "firebase": "12.19.0"
+  },
+  "results": {
+    "D5": {
+      "duzgunKapanis": {
+        "kapanis": "duzgun",
+        "init": "ok",
+        "kapanmadanOnceYerel": {
+          "exists": true,
+          "tutar": 75
+        },
+        "kapanmadanOnceSunucudaVar": false,
+        "acilis1": {
+          "yerel": {
+            "exists": true,
+            "tutar": 75
+          },
+          "esleme": {
+            "result": "ok",
+            "ms": 322
+          },
+          "sunucudaVar": true,
+          "konsol": []
+        }
+      },
+      "aniKapanis": {
+        "kapanis": "ani",
+        "init": "ok",
+        "kapanmadanOnceYerel": {
+          "exists": true,
+          "tutar": 75
+        },
+        "kapanmadanOnceSunucudaVar": false,
+        "acilis1": {
+          "yerel": {
+            "exists": false,
+            "error": "error:unavailable"
+          },
+          "esleme": {
+            "result": "ok",
+            "ms": 1
+          },
+          "sunucudaVar": false,
+          "konsol": [
+            "[2026-11-01T09:38:37.995Z]  @firebase/firestore: Firestore (12.19.0): Error using user provided cache. Falling back to memory cache: FirebaseError: [code=failed-precondition]: Failed to obtain exclusive access to the persistence layer. To allow shared access, multi-tab synchronization has to be enab"
+          ]
+        },
+        "acilis2_12snSonra": {
+          "yerel": {
+            "exists": true,
+            "tutar": 75
+          },
+          "esleme": {
+            "result": "ok",
+            "ms": 35
+          },
+          "sunucudaVar": true,
+          "konsol": []
+        }
+      }
+    }
+  }
+}

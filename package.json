@@ -9,7 +9,8 @@
     "lint": "oxlint",
     "preview": "vite preview",
     "emulator": "firebase emulators:start --only firestore --project demo-hal-defteri",
-    "deney": "firebase emulators:exec --only firestore --project demo-hal-defteri \"node deney/run.mjs\""
+    "deney": "firebase emulators:exec --only firestore --project demo-hal-defteri \"node deney/run.mjs\"",
+    "deney:d5": "firebase emulators:exec --only firestore --project demo-hal-defteri \"node deney/run.mjs D5\""
   },
   "dependencies": {
     "firebase": "^12.19.0",

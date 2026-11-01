@@ -31,7 +31,7 @@ function errCode(e: unknown): string {
 const lab = {
   async init(opts: { multiTab: boolean }) {
     try {
-      const app = initializeApp({ projectId: 'demo-hal-defteri', apiKey: 'demo' }, 'lab-' + Math.random());
+      const app = initializeApp({ projectId: 'demo-hal-defteri', apiKey: 'demo' });
       db = initializeFirestore(app, {
         localCache: persistentLocalCache({
           tabManager: opts.multiTab ? persistentMultipleTabManager() : persistentSingleTabManager(undefined),

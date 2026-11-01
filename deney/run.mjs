@@ -153,25 +153,71 @@ async function D4(browser, url) {
   results.D4 = out;
 }
 
-async function D5(url) {
+async function openLogged(ctx, url, logs) {
+  const page = await ctx.newPage();
+  page.on('console', (m) => {
+    if (m.type() === 'warning' || m.type() === 'error') logs.push(m.text().slice(0, 300));
+  });
+  await page.goto(url);
+  await page.waitForFunction(() => document.title === 'lab-ready');
+  const init = await page.evaluate(() => window.lab.init({ multiTab: false }));
+  return { page, init };
+}
+
+// D5: Çevrimdışı bekleyen yazma, uygulama kapanıp açılınca gönderilir mi?
+// 'duzgun': sayfa normal kapatılır (unload olayları çalışır)
+// 'ani'   : tarayıcı aniden kapatılır (işletim sisteminin uygulamayı öldürmesi gibi)
+async function d5Senaryo(url, kapanis) {
   await clearDb();
+  const id = 'd5-' + kapanis;
   const dir = mkdtempSync(join(tmpdir(), 'hal-d5-'));
+  const out = { kapanis };
+  let logs = [];
   let ctx = await chromium.launchPersistentContext(dir, { headless: true, ...exe });
-  let { page, init } = await openLab(ctx, url, false);
+  let { page, init } = await openLogged(ctx, url, logs);
+  out.init = init;
   await ctx.setOffline(true);
-  await page.evaluate((d) => window.lab.write('hareketler', 'd5', d), hareket(75));
+  await page.evaluate(([i, d]) => window.lab.write('hareketler', i, d), [id, hareket(75)]);
   await sleep(1000);
-  const kapanmadanOnceSunucu = !!(await serverDoc('hareketler', 'd5'));
-  await ctx.close(); // uygulama/cihaz kapanır
-  ctx = await chromium.launchPersistentContext(dir, { headless: true, ...exe });
-  const r = await openLab(ctx, url, false);
-  const yenidenAcilinca = await r.page.evaluate(() => window.lab.fromCache('hareketler', 'd5'));
-  const p = await r.page.evaluate(() => window.lab.pending(30000));
-  await sleep(1500);
-  const sunucuSonra = await serverDoc('hareketler', 'd5');
+  out.kapanmadanOnceYerel = await page.evaluate((i) => window.lab.fromCache('hareketler', i), id);
+  out.kapanmadanOnceSunucudaVar = !!(await serverDoc('hareketler', id));
+  if (kapanis === 'duzgun') { await page.close({ runBeforeUnload: true }); await sleep(500); }
   await ctx.close();
+
+  // 1. yeniden açılış: hemen
+  logs = [];
+  ctx = await chromium.launchPersistentContext(dir, { headless: true, ...exe });
+  let r = await openLogged(ctx, url, logs);
+  out.acilis1 = {
+    yerel: await r.page.evaluate((i) => window.lab.fromCache('hareketler', i), id),
+    esleme: await r.page.evaluate(() => window.lab.pending(10000)),
+  };
+  await sleep(2000);
+  out.acilis1.sunucudaVar = !!(await serverDoc('hareketler', id));
+  out.acilis1.konsol = logs;
+  await ctx.close();
+
+  // 2. yeniden açılış: 12 sn sonra (önceki oturumun kilidi zaman aşımına uğrasın)
+  if (!out.acilis1.sunucudaVar) {
+    await sleep(12000);
+    logs = [];
+    ctx = await chromium.launchPersistentContext(dir, { headless: true, ...exe });
+    r = await openLogged(ctx, url, logs);
+    out.acilis2_12snSonra = {
+      yerel: await r.page.evaluate((i) => window.lab.fromCache('hareketler', i), id),
+      esleme: await r.page.evaluate(() => window.lab.pending(15000)),
+    };
+    await sleep(3000);
+    out.acilis2_12snSonra.sunucudaVar = !!(await serverDoc('hareketler', id));
+    out.acilis2_12snSonra.konsol = logs;
+    await ctx.close();
+  }
   rmSync(dir, { recursive: true, force: true });
-  results.D5 = { init, kapanmadanOnceSunucudaVar: kapanmadanOnceSunucu, yenidenAcilincaYerelOnbellek: yenidenAcilinca, esleme: p, sunucudaVarSonra: !!sunucuSonra };
+  return out;
+}
+
+async function D5(url) {
+  results.D5 = { duzgunKapanis: await d5Senaryo(url, 'duzgun'), aniKapanis: await d5Senaryo(url, 'ani') };
 }
 
 const vite = await createServer({ server: { port: 5173, strictPort: true, host: 'localhost' }, logLevel: 'error' });
@@ -184,14 +230,17 @@ const run = async (name, fn) => {
   try { await fn(); console.log('tamam'); }
   catch (e) { results[name] = { hata: String(e?.stack ?? e) }; console.log('HATA: ' + e?.message); }
 };
-await run('D1', () => D1(browser, url));
-await run('D2', () => D2(browser, url));
-await run('D3', () => D3(browser, url));
-await run('D4', () => D4(browser, url));
-await run('D5', () => D5(url));
+const only = process.argv.slice(2);
+const sec = (n) => only.length === 0 || only.includes(n);
+if (sec('D1')) await run('D1', () => D1(browser, url));
+if (sec('D2')) await run('D2', () => D2(browser, url));
+if (sec('D3')) await run('D3', () => D3(browser, url));
+if (sec('D4')) await run('D4', () => D4(browser, url));
+if (sec('D5')) await run('D5', () => D5(url));
 await browser.close();
 await vite.close();
 
 const meta = { tarih: new Date().toISOString(), node: process.version, firebase: (await import('firebase/package.json', { with: { type: 'json' } })).default.version };
-writeFileSync('deney/sonuclar.json', JSON.stringify({ meta, results }, null, 2));
-console.log('\nSonuçlar deney/sonuclar.json dosyasına yazıldı. Bu dosyayı gönder.');
+const dosya = only.length ? `deney/sonuclar-${only.join('-')}.json` : 'deney/sonuclar.json';
+writeFileSync(dosya, JSON.stringify({ meta, results }, null, 2));
+console.log(`\nSonuçlar ${dosya} dosyasına yazıldı. Bu dosyayı gönder.`);

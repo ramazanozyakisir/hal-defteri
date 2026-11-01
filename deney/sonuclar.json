@@ -1,0 +1,154 @@
+{
+  "meta": {
+    "tarih": "2026-11-01T09:32:39.480Z",
+    "node": "v24.21.0",
+    "firebase": "12.19.0"
+  },
+  "results": {
+    "D1": {
+      "init": "ok",
+      "cevrimdisiYerelOnbellek": {
+        "exists": true,
+        "tutar": -5
+      },
+      "yazmaSonucu": "error:permission-denied",
+      "eslemeSonrasiYerelOnbellek": {
+        "exists": false
+      },
+      "sunucudaVar": false,
+      "dinleyiciOlaylari": [
+        {
+          "t": 62,
+          "exists": true,
+          "pending": true,
+          "fromCache": true,
+          "tutar": -5
+        },
+        {
+          "t": 1139,
+          "exists": true,
+          "pending": true,
+          "fromCache": false,
+          "tutar": -5
+        },
+        {
+          "t": 1171,
+          "exists": false,
+          "pending": false,
+          "fromCache": false
+        }
+      ]
+    },
+    "D2": {
+      "not": "Gerçek onay kaybı yerine, aynı kimliğe ikinci istemciden yeniden yazma ile temsil edilmiştir.",
+      "strict": {
+        "ilkYazma": "ok",
+        "ayniIcerikYenidenYazma": "error:permission-denied"
+      },
+      "asilKural": {
+        "ilkYazma": "ok",
+        "ayniIcerikYenidenYazma": "ok",
+        "farkliIcerikYazma": "error:permission-denied"
+      },
+      "sunucudakiTutar": "100",
+      "sunucudakiBelgeSayisi": 1
+    },
+    "D3": {
+      "init": "ok",
+      "N": 500,
+      "yerelYazmaMs": 6,
+      "yerelSayi": 500,
+      "sunucuCevrimdisiyken": 0,
+      "eslemeMs": 2111,
+      "eslemeSonucu": "ok",
+      "sunucuSonra": 500,
+      "yazmaSonuclari": {
+        "ok": 500
+      }
+    },
+    "D4": {
+      "cokSekmeYoneticisi": {
+        "sekmeA_init": "ok",
+        "sekmeB_init": "ok",
+        "sekmeB_cevrimdisiGoruyorMu": {
+          "exists": true,
+          "tutar": 50
+        },
+        "sekmeB_olaylar": [
+          {
+            "t": 39,
+            "exists": true,
+            "pending": true,
+            "fromCache": true,
+            "tutar": 50
+          },
+          {
+            "t": 1568,
+            "exists": false,
+            "pending": false,
+            "fromCache": false
+          },
+          {
+            "t": 1574,
+            "exists": true,
+            "pending": false,
+            "fromCache": false,
+            "tutar": 50
+          }
+        ],
+        "eslemeA": {
+          "result": "ok",
+          "ms": 30
+        },
+        "sunucuBelgeSayisi": 1
+      },
+      "tekSekmeYoneticisi": {
+        "sekmeA_init": "ok",
+        "sekmeB_init": "ok",
+        "sekmeB_cevrimdisiGoruyorMu": {
+          "exists": false,
+          "error": "error:unavailable"
+        },
+        "sekmeB_olaylar": [
+          {
+            "t": 31,
+            "exists": false,
+            "pending": false,
+            "fromCache": true
+          },
+          {
+            "t": 1565,
+            "exists": false,
+            "pending": false,
+            "fromCache": false
+          },
+          {
+            "t": 1571,
+            "exists": true,
+            "pending": false,
+            "fromCache": false,
+            "tutar": 50
+          }
+        ],
+        "eslemeA": {
+          "result": "ok",
+          "ms": 31
+        },
+        "sunucuBelgeSayisi": 1
+      }
+    },
+    "D5": {
+      "init": "ok",
+      "kapanmadanOnceSunucudaVar": false,
+      "yenidenAcilincaYerelOnbellek": {
+        "exists": false,
+        "error": "error:unavailable"
+      },
+      "esleme": {
+        "result": "ok",
+        "ms": 0
+      },
+      "sunucudaVarSonra": false
+    }
+  }
+}
