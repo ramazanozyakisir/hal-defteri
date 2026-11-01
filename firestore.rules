@@ -1,0 +1,34 @@
+rules_version = '2';
+
+// Hal Defteri — Firestore güvenlik kuralları (ilk taslak)
+// Not: Bu taslak ön deneyler içindir; kimlik doğrulama (auth) ve işletme bazlı
+// yol kısıtları Dönem 2'de eklenecektir.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function hareketGecerli(d) {
+      return d.keys().hasAll(['tur', 'tutar', 'cihaz', 'sira', 'olusturma'])
+        && d.tur in ['satis', 'tahsilat', 'stok_giris', 'fire', 'iptal']
+        && d.tutar is number && d.tutar > 0
+        && d.cihaz is string && d.sira is int;
+    }
+
+    // Asıl tasarım: hareket yalnızca eklenir. Aynı kimlikle yeniden yazma,
+    // içerik birebir aynıysa kabul edilir (onay kaybı sonrası yeniden gönderim
+    // için), farklıysa reddedilir. Silme yasaktır.
+    match /hareketler/{id} {
+      allow read: if true;
+      allow create: if hareketGecerli(request.resource.data);
+      allow update: if request.resource.data == resource.data;
+      allow delete: if false;
+    }
+
+    // Karşılaştırma (D2): yalnızca-oluşturma kuralı. Aynı içerikle yeniden
+    // yazma bile "güncelleme" sayılıp reddedilir.
+    match /hareketler_strict/{id} {
+      allow read: if true;
+      allow create: if hareketGecerli(request.resource.data);
+      allow update, delete: if false;
+    }
+  }
+}

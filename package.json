@@ -1,0 +1,33 @@
+{
+  "name": "hal-defteri",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "oxlint",
+    "preview": "vite preview",
+    "emulator": "firebase emulators:start --only firestore --project demo-hal-defteri",
+    "deney": "firebase emulators:exec --only firestore --project demo-hal-defteri \"node deney/run.mjs\""
+  },
+  "dependencies": {
+    "firebase": "^12.19.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.2",
+    "@types/node": "^24.19.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "firebase-tools": "^15.34.2",
+    "oxlint": "^1.89.0",
+    "playwright": "^1.64.1",
+    "typescript": "~7.0.2",
+    "vite": "^8.3.5",
+    "vite-plugin-pwa": "^2.0.0",
+    "vitest": "^5.0.5"
+  }
+}
